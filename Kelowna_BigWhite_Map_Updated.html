@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Kelowna to Big White Route Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+    }
+    .leaflet-container {
+      background: #2e2e2e;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="legend">
+    <strong>Drive Times:</strong><br>
+    🚡 Gem Lake Chairlift: ~1 hr 10 min from YLW / ~1 hr from Downtown<br>
+    ⭐ Main Destination: ~1 hr 15 min from YLW / ~1 hr 5 min from Downtown
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+  <script>
+    const map = L.map('map').setView([49.8625, -119.5], 10);
+
+    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenMapTiles & Stadia Maps',
+      maxZoom: 18
+    }).addTo(map);
+
+    const violet = '#593F92';
+
+    const locations = {
+      ylw: { name: "Kelowna International Airport (YLW)", coords: [49.9564, -119.3772] },
+      downtown: { name: "Downtown Kelowna", coords: [49.8844, -119.4956] },
+      mainDestination: { name: "Main Destination", coords: [49.7207762536725, -118.92164580244379] },
+      gemLake: { name: "Gem Lake Chairlift", coords: [49.7305, -118.9361] }
+    };
+
+    function addIconMarker(coords, iconUrl, label) {
+      const icon = L.icon({
+        iconUrl: iconUrl,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]
+      });
+      L.marker(coords, { icon }).addTo(map).bindPopup(label);
+    }
+
+    addIconMarker(locations.ylw.coords, 'https://cdn-icons-png.flaticon.com/512/190/190601.png', locations.ylw.name);
+    addIconMarker(locations.downtown.coords, 'https://cdn-icons-png.flaticon.com/512/235/235861.png', locations.downtown.name);
+    addIconMarker(locations.mainDestination.coords, 'https://cdn-icons-png.flaticon.com/512/684/684908.png', locations.mainDestination.name);
+    addIconMarker(locations.gemLake.coords, 'https://cdn-icons-png.flaticon.com/512/1586/1586873.png', locations.gemLake.name);
+
+    L.Routing.control({
+      waypoints: [
+        L.latLng(locations.downtown.coords),
+        L.latLng(locations.mainDestination.coords)
+      ],
+      createMarker: () => null,
+      routeWhileDragging: false,
+      lineOptions: {
+        styles: [{ color: violet, weight: 5 }]
+      }
+    }).addTo(map);
+
+    L.Routing.control({
+      waypoints: [
+        L.latLng(locations.ylw.coords),
+        L.latLng(locations.mainDestination.coords)
+      ],
+      createMarker: () => null,
+      routeWhileDragging: false,
+      lineOptions: {
+        styles: [{ color: '#9370DB', weight: 5, dashArray: '10, 6' }]
+      }
+    }).addTo(map);
+
+  </script>
+</body>
+</html>
